@@ -1,0 +1,48 @@
+# Que Sera Sera — Cloudflare Pages response headers
+# https://developers.cloudflare.com/pages/configuration/headers/
+#
+# Rules are cumulative: every matching block adds its headers to the response.
+# Never declare the same header twice for one path — Cloudflare joins the
+# values, and a joined Cache-Control with two max-age directives is treated as
+# stale by RFC 9111 caches.
+#
+# NOTE: Pages Functions (functions/**) bypass this file. The reservation API
+# sets its own security + no-store headers inside functions/api/reservations.js.
+
+# ---------------------------------------------------------------------------
+# Security headers — every response
+# ---------------------------------------------------------------------------
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self'; manifest-src 'self'; media-src 'none'; worker-src 'none'; upgrade-insecure-requests
+
+# ---------------------------------------------------------------------------
+# Immutable static assets — safe for a year
+# NOTE: js/main.js and css/styles.css are NOT fingerprinted. If you change
+# either file, bump a ?v= query on the HTML reference (or rename the file),
+# otherwise returning visitors keep the cached copy for up to a year.
+# ---------------------------------------------------------------------------
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+# ---------------------------------------------------------------------------
+# HTML — always revalidate so a deploy is visible immediately
+# ---------------------------------------------------------------------------
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

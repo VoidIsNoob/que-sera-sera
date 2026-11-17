@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Reservation intake — form submissions only, nothing to index here.
+Disallow: /api/
+
+Sitemap: https://queserasera.in/sitemap.xml
